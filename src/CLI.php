@@ -1,42 +1,41 @@
 <?php
 namespace Atlas;
 
-class CLI {
-    public static function run(array $argv = []) {
-        // Remove the first item (the script name "bin/atlas")
-        $args = array_slice($argv, 1);
+use Atlas\Commands\NewCommand;
+use Atlas\Commands\ServeCommand;
 
-        if (empty($args)) {
-            self::showHelp();
-            return;
+class CLI
+{
+    public static function run(array $argv = [])
+    {
+        if (count($argv) < 2) {
+            self::help();
+            exit(1);
         }
 
-        $command = $args[0] ?? 'help';
+        $command = $argv[1];
 
         switch ($command) {
-            case 'new':
-                echo "Creating a new project...\n";
-                // Later we’ll handle template setup here
+            case "new":
+                (new NewCommand())->handle($argv);
                 break;
-
-            case 'serve':
-                echo "Starting development server...\n";
-                // Could map to PHP's built-in server
+            case "serve":
+                (new ServeCommand())->handle($argv);
                 break;
-
-            case 'help':
+            case "help":
             default:
-                self::showHelp();
+                self::help();
                 break;
         }
     }
 
-    private static function showHelp() {
+    private static function help()
+    {
         echo "Atlas CLI - A lightweight PHP framework\n";
         echo "Usage: atlas [command] [options]\n\n";
         echo "Commands:\n";
-        echo "  new [name]       Create a new project\n";
+        echo "  new              Create a new project (choose template)\n";
         echo "  serve            Start the development server\n";
-        echo "  help             Shows help message\n";
+        echo "  help             Shows this help message\n";
     }
 }
